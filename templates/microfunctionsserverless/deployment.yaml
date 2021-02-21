@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "microfunctions.microfunctionsserverless.fullname" . }}
+  labels:
+    {{- include "microfunctions.microfunctionsserverless.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.microfunctionsserverless.autoscaling.enabled }}
+  replicas: {{ .Values.microfunctionsserverless.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "microfunctions.microfunctionsserverless.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.microfunctionsserverless.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "microfunctions.microfunctionsserverless.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ template "microfunctions.name" . }}-{{ .Values.microfunctionsserverless.name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.microfunctionsserverless.image.repository }}:{{ .Values.microfunctionsserverless.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.microfunctionsserverless.image.pullPolicy }}
+          env:
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "microfunctions.fullname" . }}-rabbitmq
+                  key: rabbitmq-password
+            - name: RABBIT_USER
+              value: {{ .Values.rabbitmq.auth.username | quote }}
+            - name: RABBIT_HOST
+              value: {{ include "microfunctions.rabbitmq.fullname" . }}
+          ports:
+            - name: http
+              containerPort: 4000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

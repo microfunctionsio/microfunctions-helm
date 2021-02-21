@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "microfunctions.microfunctionscontroller.fullname" . }}
+  labels:
+    {{- include "microfunctions.microfunctionscontroller.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.microfunctionscontroller.autoscaling.enabled }}
+  replicas: {{ .Values.microfunctionscontroller.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "microfunctions.microfunctionscontroller.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.microfunctionscontroller.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "microfunctions.microfunctionscontroller.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "microfunctions.microfunctionscontroller.serviceAccountName" . }}
+      containers:
+        - name: {{ template "microfunctions.name" . }}-{{ .Values.microfunctionscontroller.name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.microfunctionscontroller.image.repository }}:{{ .Values.microfunctionscontroller.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.microfunctionscontroller.image.pullPolicy }}
+          env:
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "microfunctions.fullname" . }}-rabbitmq
+                  key: rabbitmq-password
+            - name: RABBIT_USER
+              value: {{ .Values.rabbitmq.auth.username | quote }}
+            - name: RABBIT_HOST
+              value: {{ include "microfunctions.rabbitmq.fullname" . }}
+            - name: STRATEGY_GITHUBPROFILE_CLIENTID
+              value: ""
+            - name: STRATEGY_GITHUBPROFILE_CLIENTSECRET
+              value: ""
+            - name: STRATEGY_GITHUBPROFILE_CALLBACKURL
+              value: ""
+            - name: STRATEGY_REDIRECT_GITHUBPROFILE_CALLBACKURL
+              value: ""
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

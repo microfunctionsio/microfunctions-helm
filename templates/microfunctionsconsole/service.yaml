@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "microfunctions.microfunctionsconsole.fullname" . }}
+  labels:
+    {{- include "microfunctions.microfunctionsconsole.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.microfunctionsconsole.service.type }}
+  ports:
+    - port: {{ .Values.microfunctionsconsole.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "microfunctions.microfunctionsconsole.selectorLabels" . | nindent 4 }}

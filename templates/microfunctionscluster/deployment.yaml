@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "microfunctions.microfunctionscluster.fullname" . }}
+  labels:
+    {{- include "microfunctions.microfunctionscluster.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.microfunctionscluster.autoscaling.enabled }}
+  replicas: {{ .Values.microfunctionscluster.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "microfunctions.microfunctionscluster.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.microfunctionscluster.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "microfunctions.microfunctionscluster.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ template "microfunctions.name" . }}-{{ .Values.microfunctionscluster.name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.microfunctionscluster.image.repository }}:{{ .Values.microfunctionscluster.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.microfunctionscluster.image.pullPolicy }}
+          env:
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "microfunctions.fullname" . }}-mongodb
+                  key: mongodb-password
+            - name: MONGODB_USERNAME
+              value: {{ .Values.mongodb.mongodbUsername | quote }}
+            - name: MONGODB_DB
+              value: {{ .Values.mongodb.mongodbDatabase | quote }}
+            - name: MONGODB_HOST
+              value: {{ include "microfunctions.mongodb.fullname" . }}
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "microfunctions.fullname" . }}-rabbitmq
+                  key: rabbitmq-password
+            - name: RABBIT_USER
+              value: {{ .Values.rabbitmq.auth.username | quote }}
+            - name: RABBIT_HOST
+              value: {{ include "microfunctions.rabbitmq.fullname" . }}
+            - name: CLUSTER_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "microfunctions.fullname" . }}-cluster
+                  key: cluster-secret
+            - name: MANIFEST_PATH
+              value: {{ .Values.microfunctionscluster.manifestPath | quote }}
+          ports:
+            - name: http
+              containerPort: 4000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,52 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "microfunctions.microfunctionsinitjob.fullname" . }}
+  labels:
+    {{- include "microfunctions.microfunctionsinitjob.labels" . | nindent 4 }}
+spec:
+  template:
+    spec:
+      {{- with .Values.microfunctionsinitjob.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.securityContext | nindent 12 }}
+      containers:
+        - image: "{{ .Values.microfunctionsinitjob.image.repository }}:{{ .Values.microfunctionsinitjob.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.microfunctionsapis.image.pullPolicy }}
+          name: {{ template "microfunctions.name" . }}-{{ .Values.microfunctionsinitjob.name }}
+          env:
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "microfunctions.fullname" . }}-rabbitmq
+                  key: rabbitmq-password
+            - name: RABBIT_USER
+              value: {{ .Values.rabbitmq.auth.username | quote }}
+            - name: RABBIT_HOST
+              value: {{ include "microfunctions.rabbitmq.fullname" . }}
+            - name: OWNER_EMAIL
+              value: {{ .Values.ownerEmail | quote }}
+            - name: OWNER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "microfunctions.fullname" . }}-init
+                  key: owner-password
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+            {{- with .Values.volumeMounts }}
+      nodeSelector:
+        {{ toYaml . | indent 8 }}
+        {{- end }}
+        {{- with .Values.affinity }}
+      affinity:
+        {{ toYaml . | indent 8 }}
+        {{- end }}
+        {{- with .Values.tolerations }}
+      tolerations:
+        {{ toYaml . | indent 8 }}
+        {{- end }}
+      restartPolicy: {{ .Values.microfunctionsinitjob.restartPolicy }}
+    backoffLimit: {{ .Values.microfunctionsinitjob.backoffLimit }}

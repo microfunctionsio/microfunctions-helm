@@ -1,0 +1,51 @@
+1. Get the application URL by running these commands:
+{{- if .Values.microfunctionsconsole.ingress.enabled }}
+{{- range $host := .Values.microfunctionsconsole.ingress.hosts }}
+  {{- range .paths }}
+  http{{ if $.Values.microfunctionsconsole.ingress.tls }}s{{ end }}://{{ $host.host }}{{ . }}
+  {{- end }}
+{{- end }}
+{{- else if contains "NodePort" .Values.microfunctionsconsole.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "microfunctions.microfunctionsconsole.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.microfunctionsconsole.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "microfunctions.microfunctionsconsole.fullname" . }}'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "microfunctions.microfunctionsconsole.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo http://$SERVICE_IP:{{ .Values.microfunctionsconsole.service.port }}
+{{- else if contains "ClusterIP" .Values.microfunctionsconsole.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ .Values.microfunctionsconsole.name  }},app.kubernetes.io/instance={{ .Values.microfunctionsconsole.name }}" -o jsonpath="{.items[0].metadata.name}")
+  echo "Visit http://127.0.0.1:8080 to use  microfunctions-controller"
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:{{ .Values.microfunctionsconsole.service.port }}
+{{- end }}
+
+
+1. Get the microfunctions-controller URL by running these commands:
+{{- if .Values.microfunctionscontroller.ingress.enabled }}
+{{- range $host := .Values.microfunctionscontroller.ingress.hosts }}
+  {{- range .paths }}
+  http{{ if $.Values.microfunctionscontroller.ingress.tls }}s{{ end }}://{{ $host.host }}{{ . }}
+  {{- end }}
+{{- end }}
+{{- else if contains "NodePort" .Values.microfunctionscontroller.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "microfunctions.microfunctionscontroller.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.microfunctionscontroller.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "microfunctions.microfunctionscontroller.fullname" . }}'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "microfunctions.microfunctionscontroller.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo http://$SERVICE_IP:{{ .Values.microfunctionscontroller.service.port }}
+{{- else if contains "ClusterIP" .Values.microfunctionscontroller.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ .Values.microfunctionscontroller.name  }},app.kubernetes.io/instance={{ .Values.microfunctionscontroller.name }}" -o jsonpath="{.items[0].metadata.name}")
+  echo "Visit http://127.0.0.1:8080 to use  microfunctions-controller"
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:{{ .Values.microfunctionscontroller.service.port }}
+{{- end }}
+
+
+
+3. Login with the following credentials below to see your microfunctions platform :
+
+  echo Username: {{ .Values.ownerEmail }}
+  echo Password: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ template "microfunctions.fullname" . }}-init -o jsonpath="{.data.owner-password}" | base64 --decode)

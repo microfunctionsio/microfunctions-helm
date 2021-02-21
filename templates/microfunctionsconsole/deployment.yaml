@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "microfunctions.microfunctionsconsole.fullname" . }}
+  labels:
+    {{- include "microfunctions.microfunctionsconsole.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.microfunctionsconsole.autoscaling.enabled }}
+  replicas: {{ .Values.microfunctionsconsole.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "microfunctions.microfunctionsconsole.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.microfunctionsconsole.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "microfunctions.microfunctionsconsole.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "microfunctions.microfunctionsconsole.serviceAccountName" . }}
+      containers:
+        - name: {{ template "microfunctions.name" . }}-{{ .Values.microfunctionsconsole.name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.microfunctionsconsole.image.repository }}:{{ .Values.microfunctionsconsole.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.microfunctionsconsole.image.pullPolicy }}
+          env:
+            - name: CONTROLLER_HOST
+              value: {{ .Values.microfunctionsconsole.controllerHost | quote }}
+            - name: CONTROLLER_PATH
+              value: {{ .Values.microfunctionsconsole.controllerPath | quote }}
+            - name: CONTROLLER_PORT
+              value: {{ .Values.microfunctionsconsole.controllerPort | quote  }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

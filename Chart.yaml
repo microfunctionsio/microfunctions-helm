@@ -14,10 +14,13 @@ sources:
 
 type: application
 
-version: 0.1.0
+version: 0.1.1
 
 appVersion: 0.1.0
-
+kubeVersion: '>=1.17.0-0'
+maintainers:
+  - email: bensassi.mohammed@gmail.com
+    name: ben sassi mohammed
 dependencies:
   - name: mongodb
     version: 7.8.10

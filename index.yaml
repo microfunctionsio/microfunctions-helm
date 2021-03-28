@@ -1,0 +1,242 @@
+apiVersion: v1
+entries:
+  cert-manager:
+  - apiVersion: v1
+    appVersion: v1.2.0
+    created: "2021-03-28T14:58:44.287692+02:00"
+    description: A Helm chart for cert-manager
+    digest: c77c8ac25e59f219a67a1a30313a0e87a814474cf41155cc3e72c6a3bb04cf89
+    home: https://github.com/jetstack/cert-manager
+    icon: https://raw.githubusercontent.com/jetstack/cert-manager/master/logo/logo.png
+    keywords:
+    - cert-manager
+    - kube-lego
+    - letsencrypt
+    - tls
+    maintainers:
+    - email: james@jetstack.io
+      name: munnerz
+    name: cert-manager
+    sources:
+    - https://github.com/jetstack/cert-manager
+    urls:
+    - charts/cert-manager-v1.2.0.tgz
+    version: v1.2.0
+  kong:
+  - annotations:
+      category: Infrastructure
+    apiVersion: v2
+    appVersion: 2.3.3
+    created: "2021-03-28T14:58:44.297634+02:00"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 10.x.x
+    - condition: cassandra.enabled
+      name: cassandra
+      repository: https://charts.bitnami.com/bitnami
+      version: 7.x.x
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      version: 1.x.x
+    description: Kong is a scalable, open source API layer (aka API gateway or API
+      middleware) that runs in front of any RESTful API. Extra functionalities beyond
+      the core platform are extended through plugins. Kong is built on top of reliable
+      technologies like NGINX and provides an easy-to-use RESTful API to operate and
+      configure the system.
+    digest: c28a23a92d92808ab2270ec637be852f3df1f306deb9187246354b6829ea585e
+    home: https://github.com/bitnami/charts/tree/master/bitnami/kong
+    icon: https://bitnami.com/assets/stacks/kong/img/kong-stack-220x234.png
+    keywords:
+    - kong
+    - ingress
+    - openresty
+    - controller
+    - http
+    - web
+    - www
+    - reverse proxy
+    maintainers:
+    - email: containers@bitnami.com
+      name: Bitnami
+    name: kong
+    sources:
+    - https://github.com/bitnami/bitnami-docker-kong
+    - https://konghq.com/
+    urls:
+    - charts/kong-3.4.5.tgz
+    version: 3.4.5
+  metrics-server:
+  - annotations:
+      category: Analytics
+    apiVersion: v2
+    appVersion: 0.4.1
+    created: "2021-03-28T14:58:44.299723+02:00"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.x.x
+    description: Metrics Server is a cluster-wide aggregator of resource usage data.
+      Metrics Server collects metrics from the Summary API, exposed by Kubelet on
+      each node.
+    digest: 46e7cfd597823a1ebfa04d0057d4bda5df050ee8cfcab7d7030561fb0ecb2b33
+    home: https://github.com/bitnami/charts/tree/master/bitnami/metrics-server
+    icon: https://bitnami.com/assets/stacks/metrics-server/img/metrics-server-stack-110x117.png
+    keywords:
+    - metrics-server
+    - cluster
+    - metrics
+    maintainers:
+    - email: containers@bitnami.com
+      name: Bitnami
+    name: metrics-server
+    sources:
+    - https://github.com/bitnami/bitnami-docker-metrics-server
+    - https://github.com/kubernetes-incubator/metrics-server
+    urls:
+    - charts/metrics-server-5.3.1.tgz
+    version: 5.3.1
+  microfunctions:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2021-03-28T14:58:44.323699+02:00"
+    dependencies:
+    - name: mongodb
+      repository: https://charts.bitnami.com/bitnami
+      version: 7.8.10
+    - name: rabbitmq
+      repository: https://charts.bitnami.com/bitnami
+      version: 7.6.9
+    - condition: nginx-ingress-controller.enabled
+      name: nginx-ingress-controller
+      repository: https://charts.bitnami.com/bitnami
+      version: 7.5.0
+    - condition: metrics-server.enabled
+      name: metrics-server
+      repository: https://charts.bitnami.com/bitnami
+      version: 5.3.1
+    - condition: cert-manager.enabled
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      version: 1.2.0
+    - condition: kong.enabled
+      name: kong
+      repository: https://charts.bitnami.com/bitnami
+      version: 3.4.5
+    description: MicroFunctions is open-source serverless platform bthat lets you
+      deploy small bits of code without having to worry about the underlying infrastructure
+      plumbing. It leverages Kubernetes  resources to provide auto-scaling, API routing,
+      monitoring, troubleshooting and supports every programming language. (Nodejs,Go,python,..).
+    digest: 0135d97bdb67031e99b826a2207dab45e8675f30400dc57348f27942e4e5ee8d
+    home: https://microfunctions.io/
+    icon: https://camo.githubusercontent.com/63459c2b28d67165026260c9c986e84b276e5c548122d745da9762ae3bd11fb1/687474703a2f2f7777772e6d6963726f66756e6374696f6e732e696f2f77702d636f6e74656e742f75706c6f6164732f323032302f30372f4e65772d50726f6a6563742d332e706e67
+    keywords:
+    - backend
+    - serverless
+    - platform
+    - functions
+    kubeVersion: '>=1.17.0-0'
+    maintainers:
+    - email: bensassi.mohammed@gmail.com
+      name: ben sassi mohammed
+    name: microfunctions
+    sources:
+    - https://github.com/microfunctionsio/microfunctions-helm
+    type: application
+    urls:
+    - charts/microfunctions-0.1.1.tgz
+    version: 0.1.1
+  mongodb:
+  - apiVersion: v1
+    appVersion: 4.2.4
+    created: "2021-03-28T14:58:44.32508+02:00"
+    description: NoSQL document-oriented database that stores JSON-like documents
+      with dynamic schemas, simplifying the integration of data in content-driven
+      applications.
+    digest: 830154796c9c562df4a6a074729b64e998a90949eb2a0476ab19dd7bd833a6cf
+    home: https://mongodb.org
+    icon: https://bitnami.com/assets/stacks/mongodb/img/mongodb-stack-220x234.png
+    keywords:
+    - mongodb
+    - database
+    - nosql
+    - cluster
+    - replicaset
+    - replication
+    maintainers:
+    - email: containers@bitnami.com
+      name: Bitnami
+    name: mongodb
+    sources:
+    - https://github.com/bitnami/bitnami-docker-mongodb
+    urls:
+    - charts/mongodb-7.8.10.tgz
+    version: 7.8.10
+  nginx-ingress-controller:
+  - annotations:
+      category: Infrastructure
+    apiVersion: v2
+    appVersion: 0.44.0
+    created: "2021-03-28T14:58:44.327119+02:00"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 1.x.x
+    description: Chart for the nginx Ingress controller
+    digest: 22ff7f77c13bc65e2813c97590652edfe8c7ffe78f1eb48014cbd79da68af28b
+    home: https://github.com/bitnami/charts/tree/master/bitnami/nginx-ingress-controller
+    icon: https://bitnami.com/assets/stacks/nginx-ingress-controller/img/nginx-ingress-controller-stack-220x234.png
+    keywords:
+    - ingress
+    - nginx
+    - http
+    - web
+    - www
+    - reverse proxy
+    maintainers:
+    - email: containers@bitnami.com
+      name: Bitnami
+    name: nginx-ingress-controller
+    sources:
+    - https://github.com/bitnami/bitnami-docker-nginx-ingress-controller
+    - https://github.com/kubernetes/ingress-nginx
+    urls:
+    - charts/nginx-ingress-controller-7.5.0.tgz
+    version: 7.5.0
+  rabbitmq:
+  - annotations:
+      category: Infrastructure
+    apiVersion: v1
+    appVersion: 3.8.9
+    created: "2021-03-28T14:58:44.329258+02:00"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 0.x.x
+    description: Open source message broker software that implements the Advanced
+      Message Queuing Protocol (AMQP)
+    digest: 66995b8cfd13527f3cd3af16af91d604deb8d9815bd022cd1522b27b14d49749
+    home: https://github.com/bitnami/charts/tree/master/bitnami/rabbitmq
+    icon: https://bitnami.com/assets/stacks/rabbitmq/img/rabbitmq-stack-220x234.png
+    keywords:
+    - rabbitmq
+    - message queue
+    - AMQP
+    maintainers:
+    - email: containers@bitnami.com
+      name: Bitnami
+    name: rabbitmq
+    sources:
+    - https://github.com/bitnami/bitnami-docker-rabbitmq
+    - https://www.rabbitmq.com
+    urls:
+    - charts/rabbitmq-7.6.9.tgz
+    version: 7.6.9
+generated: "2021-03-28T14:58:44.276806+02:00"

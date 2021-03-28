@@ -1,17 +1,32 @@
-# microfunctions
+# microfunctions-helm
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+[MicroFunctions](https://microFunctions.io/)  is open-source serverless platform bthat lets you deploy small bits of code without having to worry about the underlying infrastructure plumbing. It leverages Kubernetes  resources to provide auto-scaling, API routing, monitoring, troubleshooting and supports every programming language. (Nodejs,Go,python,..).
 
-MicroFunctions is open-source serverless platform bthat lets you deploy small bits of code without having to worry about the underlying infrastructure plumbing. It leverages Kubernetes  resources to provide auto-scaling, API routing, monitoring, troubleshooting and supports every programming language. (Nodejs,Go,python,..).
+## TL;DR
 
-**Homepage:** <https://microfunctions.io/>
+```console
+$ helm repo add  microfunctions https://microfunctionsio.github.io/microfunctions-helm
+$ helm install my-release microfunctions/microfunctions -n microfunctions --create-namespace 
+```
 
-## Maintainers
+## Introduction
 
-| Name | Email | Url |
-| ---- | ------ | --- |
-| ben sassi mohammed | bensassi.mohammed@gmail.com |  |
+This chart bootstraps a [MicroFunctions](https://microFunctions.io/) deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
 
+It also packages the [Bitnami MongoDB chart](https://github.com/bitnami/charts/tree/master/bitnami/mongodb)  chart which is required for bootstrapping a Mongodb deployment for the database requirements of the MicroFunctions platform,
+and the [Bitnami Rabbitmq chart](https://github.com/bitnami/charts/tree/master/bitnami/rabbitmq) chart which is required  for messaging protocols.
+and :
+- [nginx-ingress-controller](https://kubernetes.github.io/ingress-nginx)
+- [kong](https://konghq.com/solutions/kubernetes-ingress/)
+- [cert-manager](https://cert-manager.io/docs/)
+- [metrics-server](https://github.com/kubernetes-sigs/metrics-server)
+
+## Prerequisites
+
+- Kubernetes v1.17+
+- Helm 3.1.0
+- PV provisioner support in the underlying infrastructure
+- ReadWriteMany volumes for deployment scaling
 ## Source Code
 
 * <https://github.com/microfunctionsio/microfunctions-helm>
@@ -29,7 +44,7 @@ Kubernetes: `>=1.17.0-0`
 | https://charts.bitnami.com/bitnami | rabbitmq | 7.6.9 |
 | https://charts.jetstack.io | cert-manager | 1.2.0 |
 
-## Values
+## Parameters
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|

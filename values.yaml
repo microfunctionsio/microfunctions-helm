@@ -361,7 +361,7 @@ microfunctionsconsole:
 
   controllerHost :  microfunctions.local
 
-  controllerPath :   /microfunctions/apis
+  controllerPath :   "/microfunctions/apis"
 
   controllerPort: ""
 

@@ -34,7 +34,7 @@ spec:
             - name: RABBITMQ_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "microfunctions.fullname" . }}-rabbitmq
+                  name: {{ .Release.Name }}-rabbitmq
                   key: rabbitmq-password
             - name: RABBIT_USER
               value: {{ .Values.rabbitmq.auth.username | quote }}
